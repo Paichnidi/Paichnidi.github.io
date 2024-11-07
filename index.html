@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="styles.css">
+        <title>Military Personnel Report System</title>
+    </head>
+    <body>
+        <div class="classification-banner">
+            FOR REAPER SQUAD USE ONLY - PERSONNEL INCIDENT REPORT SYSTEM
+        </div>
+        <h1 id="title">Personnel Incident Report System</h1>
+        <div class="gradient-border">
+            <div class="form-container">
+                <form id="complaintForm">
+                    <div class="form-group">
+                        <label for="officerSelect">Select Officer:</label>
+                        <select id="officerSelect" name="officerSelect" required>
+                            <option value="">-- Select an Officer --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="misconductType">Type of Misconduct:</label>
+                        <select id="misconductType" name="misconductType" required>
+                            <option value="">-- Select Type --</option>
+                            <option value="Excessive Force">Excessive Force</option>
+                            <option value="Racial Discrimination">Racial Discrimination</option>
+                            <option value="Sexual Misconduct">Sexual Misconduct</option>
+                            <option value="Verbal Abuse">Verbal Abuse</option>
+                            <option value="Abuse of Power">Abuse of Power</option>
+                            <option value="Corruption">Corruption</option>
+                            <option value="Negligence">Negligence</option>
+                            <option value="other">Other (Specify)</option>
+                        </select>
+                        <input type="text" id="otherMisconductType" name="otherMisconductType" 
+                               placeholder="Please specify the type of misconduct" 
+                               style="display: none;">
+                    </div>
+                    <div class="form-group">
+                        <label for="incidentDate">Date of Incident:</label>
+                        <input type="datetime-local" id="incidentDate" name="incidentDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location of Incident:</label>
+                        <input type="text" id="location" name="location" required 
+                               placeholder="e.g., Police Station, Street Address, or Area">
+                    </div>
+                    <div class="form-group">
+                        <label for="witnesses">Witnesses (if any):</label>
+                        <input type="text" id="witnesses" name="witnesses" 
+                               placeholder="Names or descriptions of any witnesses">
+                    </div>
+                    <div class="form-group">
+                        <label for="complaint">Detailed Description:</label>
+                        <textarea id="complaint" name="complaint" required 
+                                 placeholder="Please provide a detailed description of the incident, including what happened, when it happened, and any other relevant information."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="evidence">Evidence (if any):</label>
+                        <textarea id="evidence" name="evidence" 
+                                 placeholder="Describe any evidence you have (screenshots, recordings, etc.)"></textarea>
+                    </div>
+                    <button type="submit">Submit Complaint</button>
+                </form>
+            </div>
+        </div>
+        <script src="static/script.js"></script>
+    </body>
+</html>
