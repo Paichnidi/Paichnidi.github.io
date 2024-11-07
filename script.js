@@ -1,5 +1,6 @@
 // Replace with your Netlify function URL
-const NETLIFY_FUNCTION_URL = 'https://reaper-pirs.netlify.app/.netlify/functions/submit-report';// Hardcode the officers data since we can't fetch it from a server
+const NETLIFY_FUNCTION_URL = 'https://reaper-pirs.netlify.app/.netlify/functions/submit-report';
+
 const OFFICERS = [
     {"name": "0-11 Reaper", "id": "1193393168247422989"},
     {"name": "0-10 Jax", "id": "1023303156676972554"},
