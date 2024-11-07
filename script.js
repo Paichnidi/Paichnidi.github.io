@@ -12,6 +12,16 @@ const OFFICERS = [
 // Load officers into dropdown
 function loadOfficers() {
     const select = document.getElementById('officerSelect');
+    
+    // Clear existing options
+    select.innerHTML = ''; // Clear previous options
+
+    // Add a default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '-- Select an Officer --';
+    select.appendChild(defaultOption);
+
     OFFICERS.forEach(officer => {
         const option = document.createElement('option');
         option.value = JSON.stringify({ id: officer.id, name: officer.name });
@@ -108,12 +118,7 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
             });
         }
 
-        const requestBody = {
-            embed: embed
-        };
-        
-        console.log('Sending request:', requestBody);
-
+        // Send to Netlify function
         const response = await fetch(NETLIFY_FUNCTION_URL, {
             method: 'POST',
             headers: {
@@ -121,13 +126,10 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
                 'Accept': 'application/json'
             },
             mode: 'cors',
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify({
+                embed: embed
+            })
         });
-
-        // Log the response
-        console.log('Response status:', response.status);
-        const responseData = await response.text();
-        console.log('Response data:', responseData);
 
         if (response.ok) {
             alert('Report submitted successfully!');
@@ -139,7 +141,8 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
             // Reset officer select
             loadOfficers();
         } else {
-            throw new Error(`Failed to submit report: ${responseData}`);
+            const errorText = await response.text();
+            throw new Error(`Failed to submit report: ${errorText}`);
         }
     } catch (error) {
         console.error('Error:', error);
