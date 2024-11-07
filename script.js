@@ -1,5 +1,5 @@
-// Replace this webhook URL with your own Discord webhook URL
-const WEBHOOK_URL = 'https://discord.com/api/webhooks/1303914740040601611/LBHs8qY3wQkVtFzK8Pfgfcgka9P-2PpLwyEJC7ePDDOAcFZqaxiDaO7Z4iHrNTSz4gqN';
+// Replace with your Netlify function URL
+const NETLIFY_FUNCTION_URL = 'https://reaper-pirs.netlify.app/';
 
 // Hardcode the officers data since we can't fetch it from a server
 const OFFICERS = [
@@ -109,14 +109,14 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
             });
         }
 
-        // Send to Discord webhook
-        const response = await fetch(WEBHOOK_URL, {
+        // Send to Netlify function
+        const response = await fetch(NETLIFY_FUNCTION_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                embeds: [embed]
+                embed: embed
             })
         });
 
@@ -127,6 +127,8 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             document.getElementById('incidentDate').value = now.toISOString().slice(0, 16);
+            // Reset officer select
+            loadOfficers();
         } else {
             throw new Error('Failed to submit report');
         }
