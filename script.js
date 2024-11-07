@@ -108,16 +108,26 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
             });
         }
 
-        // Send to Netlify function
+        const requestBody = {
+            embed: embed
+        };
+        
+        console.log('Sending request:', requestBody);
+
         const response = await fetch(NETLIFY_FUNCTION_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
-            body: JSON.stringify({
-                embed: embed
-            })
+            mode: 'cors',
+            body: JSON.stringify(requestBody)
         });
+
+        // Log the response
+        console.log('Response status:', response.status);
+        const responseData = await response.text();
+        console.log('Response data:', responseData);
 
         if (response.ok) {
             alert('Report submitted successfully!');
@@ -129,7 +139,7 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
             // Reset officer select
             loadOfficers();
         } else {
-            throw new Error('Failed to submit report');
+            throw new Error(`Failed to submit report: ${responseData}`);
         }
     } catch (error) {
         console.error('Error:', error);
