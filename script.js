@@ -1,3 +1,6 @@
+// Replace with your Netlify function URL
+const NETLIFY_FUNCTION_URL = 'https://reaper-pirs.netlify.app/.netlify/functions/submit-report';
+
 const OFFICERS = [
     {"name": "O-11 Grim Reaper", "id": "1193393168247422989"},
     {"name": "O-10 Jax", "id": "1023303156676972554"},
@@ -15,34 +18,48 @@ const OFFICERS = [
     {"name": "E-0 Ryder", "id": "942476009230446603"}
 ];
 
+// Load officers into dropdown
 function loadOfficers() {
     const select = document.getElementById('officerSelect');
+    const plaintiffSelect = document.getElementById('courtPlaintiffSelect');
+    const defendantSelect = document.getElementById('preferredDefendantSelect');
+    
+    // Clear existing options
     select.innerHTML = ''; // Clear previous options
+    plaintiffSelect.innerHTML = ''; // Clear previous options
+    defendantSelect.innerHTML = ''; // Clear previous options
 
+    // Add a default option
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
     defaultOption.textContent = '-- Select an Officer --';
     select.appendChild(defaultOption);
-
-    console.log(OFFICERS);  // Debugging: Check if officer data is loaded
+    plaintiffSelect.appendChild(defaultOption.cloneNode(true)); // Add same default option to plaintiff select
+    defendantSelect.appendChild(defaultOption.cloneNode(true)); // Add same default option to defendant select
 
     OFFICERS.forEach(officer => {
         const option = document.createElement('option');
         option.value = JSON.stringify({ id: officer.id, name: officer.name });
         option.textContent = officer.name;
         select.appendChild(option);
+        
+        // Add to court plaintiff select
+        const plaintiffOption = document.createElement('option');
+        plaintiffOption.value = JSON.stringify({ id: officer.id, name: officer.name });
+        plaintiffOption.textContent = officer.name;
+        plaintiffSelect.appendChild(plaintiffOption);
+        
+        // Add to preferred defendant select if officer name starts with 'O'
+        if (officer.name.startsWith('O')) {
+            const defendantOption = document.createElement('option');
+            defendantOption.value = JSON.stringify({ id: officer.id, name: officer.name });
+            defendantOption.textContent = officer.name;
+            defendantSelect.appendChild(defendantOption);
+        }
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    loadOfficers();  // Ensure officers are loaded after DOM is ready
-    
-    // Set default datetime to now
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    document.getElementById('incidentDate').value = now.toISOString().slice(0, 16);
-});
-
+// Handle misconduct type selection
 document.getElementById('misconductType').addEventListener('change', function() {
     const otherInput = document.getElementById('otherMisconductType');
     if (this.value === 'other') {
@@ -54,6 +71,17 @@ document.getElementById('misconductType').addEventListener('change', function() 
     }
 });
 
+// Set up form when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadOfficers();
+    
+    // Set default datetime to now
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('incidentDate').value = now.toISOString().slice(0, 16);
+});
+
+// Handle personnel incident report submission
 document.getElementById('complaintForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -66,7 +94,7 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
     const otherMisconductType = document.getElementById('otherMisconductType').value;
     
     try {
-        // Create Discord embed
+        // Create Discord embed for personnel incident report
         const embed = {
             title: "═══ PERSONNEL INCIDENT REPORT ═══",
             color: 0x3282B8,
@@ -74,7 +102,7 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
             fields: [
                 {
                     name: "═══ CLASSIFICATION ═══",
-                    value: "```OFFICIAL USE ONLY```",
+                    value: "OFFICIAL USE ONLY",
                     inline: false
                 },
                 {
@@ -84,11 +112,9 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
                 },
                 {
                     name: "INCIDENT DETAILS",
-                    value: "```\n" +
-                        `Type: ${misconductType === 'other' ? otherMisconductType : misconductType}\n` +
+                    value: `\nType: ${misconductType === 'other' ? otherMisconductType : misconductType}\n` +
                         `Date: ${document.getElementById('incidentDate').value}\n` +
-                        `Location: ${document.getElementById('location').value}\n` +
-                        "```",
+                        `Location: ${document.getElementById('location').value}\n`,
                     inline: false
                 }
             ]
@@ -120,17 +146,152 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
         }
 
         // Send to Netlify function
-        await fetch("/.netlify/functions/send-report", {
+        const response = await fetch(NETLIFY_FUNCTION_URL, {
             method: 'POST',
-            body: JSON.stringify({ embed })
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            mode: 'cors',
+            body: JSON.stringify({
+                embed: embed
+            })
         });
-        
-        alert("Report submitted successfully!");
+
+        if (response.ok) {
+            alert('Report submitted successfully!');
+            e.target.reset();
+            // Reset datetime to current
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('incidentDate').value = now.toISOString().slice(0, 16);
+            // Reset officer select
+            loadOfficers();
+        } else {
+            const errorText = await response.text();
+            throw new Error(`Failed to submit report: ${errorText}`);
+        }
     } catch (error) {
-        console.error("Error:", error);
-        alert("Error submitting report.");
+        console.error('Error:', error);
+        alert(`Error submitting report: ${error.message}`);
     } finally {
         submitButton.disabled = false;
         submitButton.textContent = 'Submit Report';
     }
+});
+
+// Handle court report submission
+document.getElementById('courtForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
+    
+    const plaintiffData = JSON.parse(document.getElementById('courtPlaintiffSelect').value);
+    const preferredDefendantData = JSON.parse(document.getElementById('preferredDefendantSelect').value);
+    const courtType = document.getElementById('courtType').value;
+    const scheduledCourtTime = document.getElementById('scheduledCourtTime').value;
+    
+    try {
+        // Create Discord embed for court report
+        const embed = {
+            title: "═══ COURT REPORT ═══",
+            color: 0xFF5733,
+            timestamp: new Date().toISOString(),
+            fields: [
+                {
+                    name: "═══ CLASSIFICATION ═══",
+                    value: "OFFICIAL USE ONLY",
+                    inline: false
+                },
+                {
+                    name: "PLAINTIFF",
+                    value: `<@${plaintiffData.id}> (${plaintiffData.name})`,
+                    inline: false
+                },
+                {
+                    name: "PREFERRED DEFENDANT",
+                    value: `<@${preferredDefendantData.id}> (${preferredDefendantData.name})`,
+                    inline: false
+                },
+                {
+                    name: "COURT TYPE",
+                    value: courtType,
+                    inline: false
+                },
+                {
+                    name: "SCHEDULED COURT TIME",
+                    value: new Date(scheduledCourtTime).toLocaleString(),
+                    inline: false
+                },
+                {
+                    name: "INCIDENT DETAILS",
+                    value: `\nDate: ${document.getElementById('courtIncidentDate').value}\n` +
+                        `Location: ${document.getElementById('courtLocation').value}\n`,
+                    inline: false
+                }
+            ]
+        };
+
+        // Add optional fields
+        const courtWitnesses = document.getElementById('courtWitnesses').value;
+        if (courtWitnesses) {
+            embed.fields.push({
+                name: "WITNESSES",
+                value: `\`\`\`${courtWitnesses}\`\`\``,
+                inline: false
+            });
+        }
+
+        embed.fields.push({
+            name: "DETAILED REPORT",
+            value: `\`\`\`${document.getElementById('courtDescription').value}\`\`\``,
+            inline: false
+        });
+
+        // Send to Netlify function
+        const response = await fetch(NETLIFY_FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            mode: 'cors',
+            body: JSON.stringify({
+                embed: embed
+            })
+        });
+
+        if (response.ok) {
+            alert('Court report submitted successfully!');
+            e.target.reset();
+            // Reset datetime to current
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('courtIncidentDate').value = now.toISOString().slice(0, 16);
+            // Reset officer select
+            loadOfficers();
+        } else {
+            const errorText = await response.text();
+            throw new Error(`Failed to submit court report: ${errorText}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert(`Error submitting court report: ${error.message}`);
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Court Report';
+    }
+});
+
+// Add this code to handle form switching without reloading the page
+document.getElementById('pirsButton').addEventListener('click', function() {
+    document.getElementById('complaintFormContainer').style.display = 'block';
+    document.getElementById('courtFormContainer').style.display = 'none';
+});
+
+document.getElementById('courtButton').addEventListener('click', function() {
+    document.getElementById('complaintFormContainer').style.display = 'none';
+    document.getElementById('courtFormContainer').style.display = 'block';
 });
