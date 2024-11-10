@@ -2,7 +2,6 @@
 const NETLIFY_FUNCTION_URL = 'https://reaper-pirs.netlify.app/.netlify/functions/submit-report';
 
 const OFFICERS = [
-    [
     {"name": "O-11 Grim Reaper", "id": "1193393168247422989"},
     {"name": "O-10 Jax", "id": "1023303156676972554"},
     {"name": "O-10 Danny", "id": "1204222144834175016"},
@@ -17,7 +16,7 @@ const OFFICERS = [
     {"name": "E-0 Carson", "id": "1217266779676610732"},
     {"name": "E-0 Joseph", "id": "747170260800634891"},
     {"name": "E-0 Ryder", "id": "942476009230446603"}
-]
+];
 
 // Load officers into dropdown
 function loadOfficers() {
