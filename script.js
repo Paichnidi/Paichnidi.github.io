@@ -1,6 +1,3 @@
-// Replace with your Netlify function URL
-const NETLIFY_FUNCTION_URL = 'https://reaper-pirs.netlify.app/.netlify/functions/submit-report';
-
 const OFFICERS = [
     {"name": "O-11 Grim Reaper", "id": "1193393168247422989"},
     {"name": "O-10 Jax", "id": "1023303156676972554"},
@@ -18,18 +15,16 @@ const OFFICERS = [
     {"name": "E-0 Ryder", "id": "942476009230446603"}
 ];
 
-// Load officers into dropdown
 function loadOfficers() {
     const select = document.getElementById('officerSelect');
-    
-    // Clear existing options
     select.innerHTML = ''; // Clear previous options
 
-    // Add a default option
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
     defaultOption.textContent = '-- Select an Officer --';
     select.appendChild(defaultOption);
+
+    console.log(OFFICERS);  // Debugging: Check if officer data is loaded
 
     OFFICERS.forEach(officer => {
         const option = document.createElement('option');
@@ -39,7 +34,15 @@ function loadOfficers() {
     });
 }
 
-// Handle misconduct type selection
+document.addEventListener('DOMContentLoaded', function() {
+    loadOfficers();  // Ensure officers are loaded after DOM is ready
+    
+    // Set default datetime to now
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('incidentDate').value = now.toISOString().slice(0, 16);
+});
+
 document.getElementById('misconductType').addEventListener('change', function() {
     const otherInput = document.getElementById('otherMisconductType');
     if (this.value === 'other') {
@@ -51,17 +54,6 @@ document.getElementById('misconductType').addEventListener('change', function() 
     }
 });
 
-// Set up form when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    loadOfficers();
-    
-    // Set default datetime to now
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    document.getElementById('incidentDate').value = now.toISOString().slice(0, 16);
-});
-
-// Handle form submission
 document.getElementById('complaintForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -128,34 +120,15 @@ document.getElementById('complaintForm').addEventListener('submit', async (e) =>
         }
 
         // Send to Netlify function
-        const response = await fetch(NETLIFY_FUNCTION_URL, {
+        await fetch("/.netlify/functions/send-report", {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            mode: 'cors',
-            body: JSON.stringify({
-                embed: embed
-            })
+            body: JSON.stringify({ embed })
         });
-
-        if (response.ok) {
-            alert('Report submitted successfully!');
-            e.target.reset();
-            // Reset datetime to current
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('incidentDate').value = now.toISOString().slice(0, 16);
-            // Reset officer select
-            loadOfficers();
-        } else {
-            const errorText = await response.text();
-            throw new Error(`Failed to submit report: ${errorText}`);
-        }
+        
+        alert("Report submitted successfully!");
     } catch (error) {
-        console.error('Error:', error);
-        alert(`Error submitting report: ${error.message}`);
+        console.error("Error:", error);
+        alert("Error submitting report.");
     } finally {
         submitButton.disabled = false;
         submitButton.textContent = 'Submit Report';
