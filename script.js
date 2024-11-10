@@ -2,12 +2,22 @@
 const NETLIFY_FUNCTION_URL = 'https://reaper-pirs.netlify.app/.netlify/functions/submit-report';
 
 const OFFICERS = [
-    {"name": "0-11 Reaper", "id": "1193393168247422989"},
-    {"name": "0-10 Jax", "id": "1023303156676972554"},
-    {"name": "0-10 Danny", "id": "1204222144834175016"},
-    {"name": "0-8 Raptor", "id": "1282765927271895193"},
-    {"name": "0-5 Dutch", "id": "718881205944189038"},
-];
+    [
+    {"name": "O-11 Grim Reaper", "id": "1193393168247422989"},
+    {"name": "O-10 Jax", "id": "1023303156676972554"},
+    {"name": "O-10 Danny", "id": "1204222144834175016"},
+    {"name": "O-10 German", "id": "1077077242468909177"},
+    {"name": "O-9 Inky", "id": "864207724992659506"},
+    {"name": "O-9 Charlie", "id": "1159909532839989350"},
+    {"name": "O-8 Raptor", "id": "1282765927271895193"},
+    {"name": "E-12 Dutch", "id": "718881205944189038"},
+    {"name": "E-2 Ethan", "id": "1267667948844220479"},
+    {"name": "E-1 FreakFinder", "id": "596814048956383239"},
+    {"name": "E-0 Cold", "id": "1304557564511653973"},
+    {"name": "E-0 Carson", "id": "1217266779676610732"},
+    {"name": "E-0 Joseph", "id": "747170260800634891"},
+    {"name": "E-0 Ryder", "id": "942476009230446603"}
+]
 
 // Load officers into dropdown
 function loadOfficers() {
