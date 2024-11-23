@@ -16,6 +16,7 @@
     <div class="nav-bar">
         <button id="pirsButton">PIRS</button>
         <button id="courtButton">Court</button>
+        <button id="arrButton">After Action Report (A.R.R)</button>
     </div>
 
     <!-- Personnel Incident Report Form -->
@@ -125,12 +126,71 @@
                           placeholder="Please provide a detailed description of the incident, including what happened, when it happened, and any other relevant information."></textarea>
             </div>
 
-            <!-- Submit Button Wrapper -->
             <div class="submit-btn-wrapper">
                 <button type="submit">Submit Court Report</button>
             </div>
         </form>
     </div>
+
+            <!--ARR After Action Report form-->
+            <div class="form-container" id="arrFormContainer" style="display: none;">
+        <form id="arrForm">
+            <div class="form-group">
+                <label for="TrainerSelect">Select Lead Trainer:</label>
+                <select id="TrainerSelect" name="TrainerSelect" required>
+                    <option value="">-- Select an Trainer --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="arrIncidentType">Type of Event:</label>
+                <select id="arrIncidentType" name="arrIncidentType" required>
+                    <option value="">-- Select Type --</option>
+                    <option value="Basic Training">Basic Training</option>
+                    <option value="Training Exercise">Training Exercise</option>
+                    <option value="Combat Operation">Combat Operation</option>
+                    <option value="Humanitarian Mission">Humanitarian Mission</option>
+                    <option value="Other">Other (Specify)</option>
+                </select>
+                <input type="text" id="arrOtherIncidentType" name="arrOtherIncidentType" 
+                       placeholder="Please specify the type of incident" 
+                       style="display: none;">
+            </div>
+            <div class="form-group">
+                <label for="arrIncidentDate">Date of Event:</label>
+                <input type="datetime-local" id="arrIncidentDate" name="arrIncidentDate" required>
+            </div>
+            <div class="form-group">
+                <label for="arrLocation">Location of Event (Maps):</label>
+                <input type="text" id="arrLocation" name="arrLocation" required 
+                       placeholder="e.g., Training Ground, Combat Zone, or Area">
+            </div>
+            <div class="form-group">
+                <label for="arrWitnesses">Attending Members</label>
+                <input type="text" id="arrWitnesses" name="arrWitnesses" 
+                       placeholder="Names of Attending users">
+            </div>
+            <div class="form-group">
+                <label for="arrDescription">Detailed Description:</label>
+                <textarea id="arrDescription" name="arrDescription" required 
+                          placeholder="Please provide a detailed description of the Event, including what happened, when it happened, and any other relevant information. (Service hours)"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="Outcome">Outcome:</label>
+                <textarea id="Outcome" name="Outcome" 
+                          placeholder="Describe the outcome of the Event and any issues if any"></textarea>
+            </div>
+            
+
+
+
+
+            <!-- Submit Button Wrapper -->
+            <div class="submit-btn-wrapper">
+                <button type="submit">Submit ARR</button>
+            </div>
+        </form>
+    </div>
+    
 
     <script src="script.js"></script>
 </body>
